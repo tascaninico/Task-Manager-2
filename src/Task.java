@@ -1,14 +1,19 @@
 public class Task {
+
     private String name;
+
     private String description;
+
     private int id;
-    private String status;
-    public Task(String name, String description, String status) {
+
+    private StatusOfTask status;
+
+    public Task(String name, String description, StatusOfTask status) {
         this.name = name;
         this.description = description;
         this.status = status;
     }
-//    public String testing = "hello, Misha"; //delete later;
+
     protected Task(String name, String description){
         this.name = name;
         this.description = description;
@@ -38,12 +43,16 @@ public class Task {
         this.id = id;
     }
 
-    public String getStatus() {
+    public StatusOfTask getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(StatusOfTask status) {
         this.status = status;
+    }
+
+    public KindOfTask getTypeofTask(){
+        return KindOfTask.TASK;
     }
 
     @Override

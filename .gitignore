@@ -1,6 +1,11 @@
 # Compiled class file
 *.class
 
+# My own inclusion 
+*.idea
+
+
+
 # Log file
 *.log
 

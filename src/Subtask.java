@@ -1,7 +1,10 @@
 public class Subtask extends Task {
+
     int idOfHostEpic;
-    public Subtask(String name, String description, String status) {
+
+    public Subtask(String name, String description, StatusOfTask status, int idOfHostEpic) {
         super(name, description, status);
+        this.idOfHostEpic = idOfHostEpic;
     }
 
     public int getIdOfHostEpic() {
@@ -13,6 +16,11 @@ public class Subtask extends Task {
     }
 
     @Override
+    public KindOfTask getTypeofTask(){
+        return KindOfTask.SUBTASK;
+    }
+
+    @Override
     public String toString(){
         return "Subtask{" +
                 "name = " + "'" + super.getName() + "'"
@@ -20,7 +28,6 @@ public class Subtask extends Task {
                 + ", id = " + "'" + super.getId() + "'"
                 + ", status = " + "'" + super.getStatus() + "'" + ", idOfHostEpic = " + "'" + idOfHostEpic + "'" + "}" ;
     }
-
 }
 
 
