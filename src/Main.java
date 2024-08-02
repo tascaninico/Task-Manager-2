@@ -69,5 +69,16 @@ public class Main {
         for (Task task: inMemoryTaskManager.getHistory()){
             System.out.println(task);
         }
+
+        System.out.println();
+        System.out.println();
+
+        System.out.println(FileBackedTasksManager.toString(task0));
+        System.out.println(FileBackedTasksManager.toString(epic0));
+        System.out.println(FileBackedTasksManager.toString(subtask));
+        System.out.println(FileBackedTasksManager.toString(subtask1));
+        System.out.println(FileBackedTasksManager.toString(subtask2));
+        System.out.println(FileBackedTasksManager.toString(epic1));
+
     }
 }

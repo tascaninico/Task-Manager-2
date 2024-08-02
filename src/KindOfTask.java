@@ -1,6 +1,6 @@
 public enum KindOfTask {
 
-    TASK("TASk"),
+    TASK("TASK"),
 
     SUBTASK("SUBTASK"),
 
