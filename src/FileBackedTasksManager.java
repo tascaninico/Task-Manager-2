@@ -1,13 +1,10 @@
 import java.io.FileWriter;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class FileBackedTasksManager extends InMemoryTaskManager{
     private Path path;
@@ -90,22 +87,34 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
 
     public void save() {
         try (FileWriter fileWriter = new FileWriter(path.toString(), StandardCharsets.UTF_8);
-             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
-             bufferedWriter.write("id,type,name,status,description,epic\n");
-             List<Task> allTasks = this.getTaskList();
-             allTasks.addAll(this.getEpicList());
-             allTasks.addAll(this.getSubtaskList());
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+            bufferedWriter.write("id,type,name,status,description,epic\n");
 
-             for (int i = 0, j = 1; i < allTasks.size(); i++){
-                 if (allTasks.get(i).getId() == j){
-                     bufferedWriter.write(toString(allTasks.get(i)));
-                     continue;
-                 }
-             }
+            List<Task> allTasks = this.getTaskList();
+            allTasks.addAll(this.getEpicList());
+            allTasks.addAll(this.getSubtaskList());
 
-        } catch (IOException exception) {
+            ArrayList<Integer> all_ID = new ArrayList<>(0);
+
+            for (int i = 0; i < allTasks.size(); i++){
+                all_ID.add(i, allTasks.get(i).getId());
+            }
+            all_ID.trimToSize();
+
+            Collections.sort(all_ID);
+
+            for (Integer id: all_ID){
+                for (Task task: allTasks){
+                    if (id == task.getId()) {
+                        bufferedWriter.write(toString(task));
+                        bufferedWriter.newLine();
+                    }
+                }
+            }
+
+            } catch (IOException exception) {
             System.out.println(exception.getMessage());
-        }
+            }
     }
 
 
