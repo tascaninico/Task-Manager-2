@@ -1,18 +1,11 @@
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-
-public class Main {
+git public class Main {
     public static void main(String[] args) {
 
         FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager("C:\\Users\\tasca\\dev\\Sprint_6_FP\\java-kanban_FP6\\TasksForSP7.csv");
 
         System.out.println("------------------------------------------");
         fileBackedTasksManager.readTasksFromFile(); // Загружвем задачи из пустого файла
+        // при повторном запуске это будет тест считывание тасков из файлов в оперативную память
         // и выводим на экран все задачи прочитанные из файла(пример работы с пустым файлом)
 
         for (Task task : fileBackedTasksManager.getTaskList()) {
@@ -28,7 +21,6 @@ public class Main {
 
         System.out.println("All epics printed!");
         System.out.println();
-
 
         for (Task task : fileBackedTasksManager.getSubtaskList()) {
             System.out.println(task);
