@@ -14,33 +14,94 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
         this.path = Paths.get(fileLocation);
     }
 
-    public void readTasksFromFile(){
+//    public static FileBackedTasksManager loadFromFile(String name){
+//        FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(name);
+//        fileBackedTasksManager.readTasksFromFile();
+//        return fileBackedTasksManager;
+//    }
+    public static FileBackedTasksManager loadFromFile(String name){
+        FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(name);
+        fileBackedTasksManager.readTasksFromFile_1();
+        return fileBackedTasksManager;
+    }
+
+//    private void readTasksFromFile(){
+//
+//        List<String> listOfTasks = new ArrayList<>();
+//
+//        try (FileReader fileReader = new FileReader(path.toString(), StandardCharsets.UTF_8);
+//            BufferedReader bufferedReader = new BufferedReader(fileReader)){
+//
+//            while (bufferedReader.ready()){
+//                listOfTasks.add(bufferedReader.readLine());
+//            }
+//            if (!listOfTasks.isEmpty()) {
+//                listOfTasks.remove(0);
+//                for (String str_task : listOfTasks) {
+//                    Task task = fromString(str_task);
+//                    if (task instanceof Epic) {
+//                        super.addNewEpic((Epic) task);
+//                    } else if (task instanceof Subtask) {
+//                        super.addNewSubtaskForEpic((Subtask) task);
+//                    } else {
+//                        super.addNewTask(task);
+//                    }
+//                }
+//            }
+//        } catch (IOException exception){
+//            throw new ManagerSaveException(exception.getMessage());
+//        }
+//
+//    }
+
+    private void readTasksFromFile_1(){
 
         List<String> listOfTasks = new ArrayList<>();
 
         try (FileReader fileReader = new FileReader(path.toString(), StandardCharsets.UTF_8);
-            BufferedReader bufferedReader = new BufferedReader(fileReader)){
+             BufferedReader bufferedReader = new BufferedReader(fileReader)){
 
             while (bufferedReader.ready()){
                 listOfTasks.add(bufferedReader.readLine());
             }
-
             if (!listOfTasks.isEmpty()) {
                 listOfTasks.remove(0);
-                for (String str_task : listOfTasks) {
-                    Task task = fromString(str_task);
-                    if (task instanceof Epic) {
-                        this.addNewEpic((Epic) task);
-                    } else if (task instanceof Subtask) {
-                        this.addNewSubtaskForEpic((Subtask) task);
-                    } else {
-                        addNewTask(task);
+                Map<Integer, Integer> mapOfEpicsID = new HashMap<>();
+                for (int i = 1;  i < listOfTasks.size()+1; ++i){
+                    String[] taskFromFile = listOfTasks.get(i-1).split(",");
+                    switch (taskFromFile[1]) {
+                        case "TASK":
+                            super.addNewTask(new Task(taskFromFile[2],taskFromFile[4],StatusOfTask.valueOf(taskFromFile[3])));
+                            continue;
+                        case "EPIC":
+                            mapOfEpicsID.put(Integer.parseInt(taskFromFile[0]), i);
+                            super.addNewEpic(new Epic(taskFromFile[2], taskFromFile[4]));
+                            continue;
+                        case "SUBTASK":
+                            super.addNewSubtaskForEpic(new Subtask(taskFromFile[2],taskFromFile[4],
+                                StatusOfTask.valueOf(taskFromFile[3]),mapOfEpicsID.get(Integer.parseInt(taskFromFile[5]))));
+
                     }
                 }
             }
         } catch (IOException exception){
             throw new ManagerSaveException(exception.getMessage());
         }
+    }
+
+    private Task fromString(String value){
+        String[] taskFromFile = value.split(",");
+        switch(taskFromFile[1]){
+            case "TASK":
+                return new Task(taskFromFile[2],taskFromFile[4],StatusOfTask.valueOf(taskFromFile[3]));
+            case "EPIC":
+                Epic epic = new Epic(taskFromFile[2], taskFromFile[4]);
+                epic.setStatus(StatusOfTask.valueOf(taskFromFile[3]));
+                return epic;
+            case "SUBTASK":
+                return new Subtask(taskFromFile[2],taskFromFile[4],StatusOfTask.valueOf(taskFromFile[3]), Integer.parseInt(taskFromFile[5]));
+        }
+        return null;
     }
 
     @Override
@@ -62,20 +123,20 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
     }
 
     @Override
-    public void updateTask(Task task, Integer id) {
-        super.updateTask(task, id);
+    public void updateTask(Task task) {
+        super.updateTask(task);
         save();
     }
 
     @Override
-    public void updateEpic(Epic epic, Integer id) {
-        super.updateEpic(epic, id);
+    public void updateEpic(Epic epic) {
+        super.updateEpic(epic);
         save();
     }
 
     @Override
-    public void updateSubtask(Subtask subtask, Integer id) {
-        super.updateSubtask(subtask, id);
+    public void updateSubtask(Subtask subtask) {
+        super.updateSubtask(subtask);
         save();
     }
 
@@ -158,18 +219,4 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
         return stringBuilder.toString();
     }
 
-    private Task fromString(String value){
-        String[] taskFromFile = value.split(",");
-        switch(taskFromFile[1]){
-            case "TASK":
-                return new Task(taskFromFile[2],taskFromFile[4],StatusOfTask.valueOf(taskFromFile[3]));
-            case "EPIC":
-                Epic epic = new Epic(taskFromFile[2], taskFromFile[4]);
-                epic.setStatus(StatusOfTask.valueOf(taskFromFile[3]));
-                return epic;
-            case "SUBTASK":
-                return new Subtask(taskFromFile[2],taskFromFile[4],StatusOfTask.valueOf(taskFromFile[3]), Integer.parseInt(taskFromFile[5]));
-        }
-        return null;
-    }
 }

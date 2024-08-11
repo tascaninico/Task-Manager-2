@@ -17,11 +17,11 @@ public interface TaskManager {
 
     List<Task> getHistory();
 
-    void updateTask(Task task, Integer id);
+    void updateTask(Task task);
 
-    void updateEpic(Epic epic, Integer id);
+    void updateEpic(Epic epic);
 
-    void updateSubtask(Subtask subtask, Integer id);
+    void updateSubtask(Subtask subtask);
 
     Task getTaskByID(int id);
 

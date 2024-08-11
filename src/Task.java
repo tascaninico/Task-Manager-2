@@ -4,7 +4,7 @@ public class Task {
 
     private String description;
 
-    private int id;
+    private int id = 0;
 
     private StatusOfTask status;
 
