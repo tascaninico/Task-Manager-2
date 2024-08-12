@@ -1,4 +1,3 @@
-
 public class Main {
     public static void main(String[] args) {
 
@@ -9,20 +8,14 @@ public class Main {
         inMemoryTaskManager.addNewTask(task0);// менеджер добавляет задачу
         inMemoryTaskManager.addNewTask(task1);// менеджер добавляет задачу
 
-        FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager("C:/Users/tasca/dev/Sprint_6_FP/historyOfSearching.txt");
-        System.out.println(fileBackedTasksManager.toString(task0));
-
         Epic epic0 = new Epic("Переезд", "Смена места жительства"); //создаем эпик
         Epic epic1 = new Epic("Привести себя в форму", "Необходимо сделать себя привлекательнее к лету"); //создаем эпик
         inMemoryTaskManager.addNewEpic(epic0);// менеджер добавляет epic
         inMemoryTaskManager.addNewEpic(epic1);// менеджер добавляет epic
-        System.out.println(fileBackedTasksManager.toString(epic0));
-
 
         Subtask subtask = new Subtask("Упаковка вещей", "Необходимо найти и упаковать все вещи", StatusOfTask.NEW, epic0.getId()); //создаем Subtask
         Subtask subtask1 = new Subtask("Перевоз вещей", "Перевезти вещи на новое место жительство", StatusOfTask.NEW , epic0.getId()); //создаем Subtask
         Subtask subtask3 = new Subtask("Распаковка вещей", "Разложить вещи по местам в новом жилье", StatusOfTask.NEW, epic0.getId()); //создаем subtask
-        System.out.println(fileBackedTasksManager.toString(subtask1));
 
         System.out.println();
 
@@ -76,7 +69,5 @@ public class Main {
         for (Task task: inMemoryTaskManager.getHistory()){
             System.out.println(task);
         }
-
-
     }
 }
