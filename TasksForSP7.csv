@@ -1,5 +1,0 @@
-id,type,name,status,description,epic
-2,TASK,Borsh cooking,NEW,To buy all essential goods to cook borsh
-4,EPIC,Career building,NEW,To build a large family
-8,SUBTASK,Looking for a partner,NEW,Need to look for an appropriate partner,4
-10,SUBTASK,Children,NEW,To give a birth to a few children,4

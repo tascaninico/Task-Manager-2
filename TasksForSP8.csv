@@ -1,0 +1,9 @@
+id,type,name,status,description,epic, start time, duration, end time
+1,TASK,Cat feeding,NEW,To fill a cat's dish, ,2024-09-03T20:00,PT2M,2024-09-03T20:02
+2,TASK,Borsh cooking,NEW,To buy all essential goods to cook borsh and cook a borsh, ,2024-08-01T13:00,PT2H,2024-08-01T15:00
+3,TASK,House cleaning,NEW,To clean the house properly, ,--:--,PT3H,--:--
+4,TASK,Working out,NEW,To do some exercises, ,--:--,PT1H30M,--:--
+5,EPIC,Moving on,NEW,Changing residence, ,2024-07-12T07:00,PT10H,2024-07-12T17:00
+6,SUBTASK,Packing,NEW,Need to find and pack all things,5,2024-07-12T07:00,PT2H30M,2024-07-12T09:30
+7,SUBTASK,Transporting,NEW,To transport them to a different place,5,2024-07-12T09:30,PT3H30M,2024-07-12T13:00
+8,SUBTASK,Unpacking,NEW,To unpack all things,5,2024-07-12T13:00,PT4H,2024-07-12T17:00

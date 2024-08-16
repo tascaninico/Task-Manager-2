@@ -1,6 +1,6 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager{
     private HashMap<Integer, Task> hashOfTasks = new HashMap<>();
@@ -9,9 +9,27 @@ public class InMemoryTaskManager implements TaskManager{
 
     private HashMap<Integer, Subtask> hashOfSubtasks = new HashMap<>();
 
+    private final TreeSet<Task> sortedSetOfTasks =
+            new TreeSet<>(Comparator.comparing((Task task0) -> task0.getStartTime().get()));
+
+    public boolean getIntersection(Task task0){
+        return getPrioritizedTasks().stream()
+                .anyMatch((task -> {
+                    LocalDateTime maxStartTime = task.getStartTime().get().isAfter(task0.getStartTime().get()) ?
+                        task.getStartTime().get() : task0.getStartTime().get();
+                    LocalDateTime minEndTime = task.getEndTime().get().isBefore(task0.getEndTime().get()) ?
+                            task.getEndTime().get() : task0.getEndTime().get();
+                    return maxStartTime.isBefore(minEndTime) || maxStartTime.isEqual(minEndTime);
+                }));
+    }
+
     private int idNum = 0;
 
     private HistoryManager historyManager = Managers.getDefaultHistory();
+
+    public List<Task> getPrioritizedTasks(){
+        return new ArrayList<>(sortedSetOfTasks);
+    }
 
     @Override
     public List<Task> getHistory(){
@@ -43,6 +61,12 @@ public class InMemoryTaskManager implements TaskManager{
     public void addNewTask(Task task){
         task.setId(generateID());
         hashOfTasks.put(task.getId(), task);
+        if (task.getStartTime().isPresent()) {
+            if (!getIntersection(task))
+                sortedSetOfTasks.add(task);
+            else
+                System.out.println("Задача пересекается по времени с другой задачей");
+        }
     }
 
     @Override
@@ -55,9 +79,30 @@ public class InMemoryTaskManager implements TaskManager{
     @Override
     public void addNewSubtaskForEpic(Subtask subtask){
         subtask.setId(generateID());
-        hashOfEpics.get(subtask.getIdOfHostEpic()).getSubtasksID().add(subtask.getId());
+        Epic hostEpic = hashOfEpics.get(subtask.getIdOfHostEpic());
+        hostEpic.getSubtasksID().add(subtask.getId());
+        if (subtask.getStartTime().isPresent()){
+            if (hostEpic.getSubtasksID().size() == 1){
+                hostEpic.setStartTime(subtask.getStartTime().get());
+                hostEpic.setEndTime(subtask.getStartTime().get().plus(subtask.getDuration()));
+                hostEpic.setDuration(subtask.getDuration());
+            } else {
+                if (subtask.getStartTime().get().isBefore(hostEpic.getStartTime().get()))
+                    hostEpic.setStartTime(subtask.getStartTime().get());
+
+                if (subtask.getEndTime().get().isAfter(hostEpic.getEndTime().get()))
+                    hostEpic.setEndTime(subtask.getEndTime().get());
+                hostEpic.setDuration(hostEpic.getDuration().plus(subtask.getDuration()));
+            }
+        }
         hashOfSubtasks.put(subtask.getId(), subtask);
         defineStatusOfEpic(hashOfEpics.get(subtask.getIdOfHostEpic()));
+        if (subtask.getStartTime().isPresent()) {
+            if (!getIntersection(subtask))
+                sortedSetOfTasks.add(subtask);
+            else
+                System.out.println("Задача пересекается по времени с другой задачей");
+        }
     }
 
     @Override

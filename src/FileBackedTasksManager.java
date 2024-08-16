@@ -4,6 +4,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLOutput;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class FileBackedTasksManager extends InMemoryTaskManager{
@@ -92,7 +95,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
         save();
     }
 
-    private void readTasksFromFile(){
+    private void readTasksFromFile(){ // to test!!!
 
         List<String> listOfTasks = new ArrayList<>();
 
@@ -107,18 +110,23 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
                 Map<Integer, Integer> mapOfEpicsID = new HashMap<>();
                 for (int i = 1;  i < listOfTasks.size()+1; ++i){
                     String[] taskFromFile = listOfTasks.get(i-1).split(",");
+                    LocalDateTime startTimeForTask = taskFromFile[6].equals("--:--") ? null :
+                            LocalDateTime.parse(taskFromFile[6]); //, DateTimeDurationFormatter.dateTimeFormatter
+                    Duration durationForTask = Duration.parse(taskFromFile[7]);
+
                     switch (taskFromFile[1]) {
                         case "TASK":
-                            super.addNewTask(new Task(taskFromFile[2],taskFromFile[4],StatusOfTask.valueOf(taskFromFile[3])));
-                            continue;
+                            super.addNewTask(new Task(taskFromFile[2],taskFromFile[4],StatusOfTask.valueOf(taskFromFile[3]),
+                                    startTimeForTask, durationForTask));
+                            continue; //"id,type,name,status,description,epic, start time, duration, end time
                         case "EPIC":
                             mapOfEpicsID.put(Integer.parseInt(taskFromFile[0]), i);
                             super.addNewEpic(new Epic(taskFromFile[2], taskFromFile[4]));
                             continue;
                         case "SUBTASK":
                             super.addNewSubtaskForEpic(new Subtask(taskFromFile[2],taskFromFile[4],
-                                    StatusOfTask.valueOf(taskFromFile[3]),mapOfEpicsID.get(Integer.parseInt(taskFromFile[5]))));
-
+                                    StatusOfTask.valueOf(taskFromFile[3]),mapOfEpicsID.get(Integer.parseInt(taskFromFile[5])),
+                                    startTimeForTask, durationForTask));
                     }
                 }
             }
@@ -130,7 +138,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
     private void save() {
         try (FileWriter fileWriter = new FileWriter(path.toString(), StandardCharsets.UTF_8);
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
-            bufferedWriter.write("id,type,name,status,description,epic\n");
+            bufferedWriter.write("id,type,name,status,description,epic, start time, duration, end time\n");
 
             List<Task> allTasks = this.getTaskList();
             allTasks.addAll(this.getEpicList());
@@ -159,14 +167,22 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
             }
     }
 
-    private static String toString(Task task){
+    private static String toString(Task task){ // to test!!!!!!!!!
         StringBuilder stringBuilder = new StringBuilder(task.getId() + "," + task.getTypeofTask().getString() + ","
                                                         + task.getName() + "," + task.getStatus() + ","
                                                         + task.getDescription());
-        if (task instanceof Subtask){
-            stringBuilder.append("," + ((Subtask)task).getIdOfHostEpic());
 
+        String startTimeForTask = task.getStartTime().isPresent() ? task.getStartTime().get().toString() : "--:--";
+        String endTimeForTask = task.getStartTime().isPresent() ? task.getEndTime().get().toString(): "--:--";
+
+        if (task instanceof Subtask){
+            stringBuilder.append(",").append(((Subtask) task).getIdOfHostEpic()).append(",");
+
+        } else {
+            stringBuilder.append(",").append(" ").append(",");
         }
+        stringBuilder.append(startTimeForTask).append(",").append(task.getDuration().toString()).append(",").append(endTimeForTask);
+
         return stringBuilder.toString();
     }
 }
