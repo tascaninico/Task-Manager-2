@@ -95,7 +95,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
         save();
     }
 
-    private void readTasksFromFile(){ // to test!!!
+    private void readTasksFromFile(){
 
         List<String> listOfTasks = new ArrayList<>();
 
@@ -144,30 +144,24 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
             allTasks.addAll(this.getEpicList());
             allTasks.addAll(this.getSubtaskList());
 
-            ArrayList<Integer> all_ID = new ArrayList<>(0);
+            allTasks.sort(Comparator.comparingInt(Task::getId));
 
-            for (int i = 0; i < allTasks.size(); i++){
-                all_ID.add(i, allTasks.get(i).getId());
-            }
-            all_ID.trimToSize();
-
-            Collections.sort(all_ID);
-
-            for (Integer id: all_ID){
-                for (Task task: allTasks){
-                    if (id == task.getId()) {
-                        bufferedWriter.write(toString(task));
-                        bufferedWriter.newLine();
-                    }
+            allTasks.forEach(task -> {
+                try {
+                    bufferedWriter.write(toString(task));
+                    bufferedWriter.newLine();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
-            }
 
-            } catch (IOException exception) {
-                System.out.println(exception.getMessage());
-            }
+            });
+
+        } catch (IOException exception) {
+            System.out.println(exception.getMessage());
+        }
     }
 
-    private static String toString(Task task){ // to test!!!!!!!!!
+    private static String toString(Task task){
         StringBuilder stringBuilder = new StringBuilder(task.getId() + "," + task.getTypeofTask().getString() + ","
                                                         + task.getName() + "," + task.getStatus() + ","
                                                         + task.getDescription());

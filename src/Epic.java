@@ -40,6 +40,6 @@ public class Epic extends Task{
                 + ", id = " + "'" + super.getId() +"'"
                 + ", status = " + "'" + super.getStatus() + "'"
                 + ", startTime = " + "'" + stTime + "'" +  ", duration = " + "'"
-                + DateTimeDurationFormatter.DurationFormatter(getDuration())  + "'" +", endTime = " + "'" + enTime + "'}";
+                + getDuration() + "'" +", endTime = " + "'" + enTime + "'}";
     }
 }

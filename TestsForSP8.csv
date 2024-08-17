@@ -1,0 +1,4 @@
+id,type,name,status,description,epic, start time, duration, end time
+1,TASK,Cat feeding,IN_PROGRESS,To fill a cat's dish, ,2024-09-03T20:00,PT2M,2024-09-03T20:02
+2,EPIC,Plane building,NEW,To build a plane, ,2022-11-20T07:00,PT48H,2022-11-22T07:00
+3,SUBTASK,Investment,NEW,To find money for plane construction,2,2022-11-20T07:00,PT48H,2022-11-22T07:00
