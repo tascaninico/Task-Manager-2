@@ -13,7 +13,7 @@ class FileBackedTasksManagerTest extends InMemoryTaskManagerTest {
     static Subtask subtask3;
 
     @Test
-    void FileBackedTasksManagerSpecialMethodsTest() { // Passing this test means that
+    void fileBackedTasksManagerSpecialMethodsTest() { // Passing this test means that
                                                      // such methods as like loadFromFile() and private methods
                                                     // such as save(), readTasksFromFile() and toString(Task) work properly
         fileBackedTasksManager.addNewTask(task0);
@@ -30,8 +30,8 @@ class FileBackedTasksManagerTest extends InMemoryTaskManagerTest {
 
         List<Task> taskList = new ArrayList<>(List.of(task0, epic2, subtask3));
 
-        assertTrue(allTasks.get(0).getName().equals(taskList.get(0).getName()));
-        assertTrue(allTasks.get(1).getName().equals(taskList.get(1).getName()));
-        assertTrue(allTasks.get(2).getName().equals(taskList.get(2).getName()));
+        assertEquals(allTasks.get(0).getName(), taskList.get(0).getName());
+        assertEquals(allTasks.get(1).getName(), taskList.get(1).getName());
+        assertEquals(allTasks.get(2).getName(), taskList.get(2).getName());
     }
 }

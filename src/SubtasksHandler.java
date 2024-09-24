@@ -1,7 +1,6 @@
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -21,14 +20,13 @@ public class SubtasksHandler extends BaseHttpHandler{
 
         String jsonResponse = "There is no subtask with a given id";
 
-        switch(method){
-            case "GET":
-                if (pathParts.length == 2){
+        switch (method) {
+            case "GET" -> {
+                if (pathParts.length == 2) {
                     jsonResponse = gson.toJson(manager.getSubtaskList());
                     sendText(exchange, jsonResponse);
                 }
-
-                if (pathParts.length == 3){
+                if (pathParts.length == 3) {
                     if (manager.getSubtaskList().stream().anyMatch(task -> task.getId() == Integer.parseInt(pathParts[2]))) {
                         jsonResponse = gson.toJson(manager.getSubtaskByID(Integer.parseInt(pathParts[2])));
                         sendText(exchange, jsonResponse);
@@ -36,9 +34,9 @@ public class SubtasksHandler extends BaseHttpHandler{
                         sendNotFound(exchange, jsonResponse);
                     }
                 }
-                break;
+            }
 
-            case "POST": // протестить!
+            case "POST" -> {
                 StringBuilder objectFromBody = new StringBuilder();
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(exchange.getRequestBody(), "utf-8"))) {
                     String line;
@@ -46,9 +44,7 @@ public class SubtasksHandler extends BaseHttpHandler{
                         objectFromBody.append(line);
                     }
                 }
-
                 Subtask subtaskAdOrUp = gson.fromJson(objectFromBody.toString(), Subtask.class);
-
                 if (pathParts.length == 2) {
                     if (manager instanceof InMemoryTaskManager && subtaskAdOrUp.getStartTime().isPresent()) {
                         if (!((InMemoryTaskManager) manager).getIntersection(subtaskAdOrUp)) {
@@ -62,8 +58,7 @@ public class SubtasksHandler extends BaseHttpHandler{
                         sendApproval(exchange, "The subtask has been added successfully");
                     }
                 }
-
-                if (pathParts.length == 3){
+                if (pathParts.length == 3) {
                     if (manager.getSubtaskList().stream().anyMatch(subtask -> subtask.getId() == subtaskAdOrUp.getId())) {
                         manager.updateSubtask(gson.fromJson(objectFromBody.toString(), Subtask.class));
                         sendApproval(exchange, "The subtask has been added successfully");
@@ -71,17 +66,16 @@ public class SubtasksHandler extends BaseHttpHandler{
                         sendNotFound(exchange, jsonResponse);
                     }
                 }
-                break;
+            }
 
-            case "DELETE":
+            case "DELETE" -> {
                 if (manager.getSubtaskList().stream().anyMatch(subtask -> subtask.getId() == Integer.parseInt(pathParts[2]))) {
                     manager.removeSubtaskByID(Integer.valueOf(pathParts[2]));
                     sendApproval(exchange, "The task has been successfully removed");
                 } else {
                     sendNotFound(exchange, jsonResponse);
                 }
+            }
         }
-
     }
-
 }

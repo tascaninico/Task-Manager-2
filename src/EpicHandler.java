@@ -1,7 +1,6 @@
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -27,12 +26,11 @@ public class EpicHandler extends BaseHttpHandler {
 
 
         switch (method) {
-            case "GET":
+            case "GET" -> {
                 if (pathParts.length == 2) {
                     jsonResponse = gson.toJson(manager.getEpicList());
                     sendText(exchange, jsonResponse);
                 }
-
                 if (pathParts.length == 3) {
                     if (manager.getEpicList().stream().anyMatch(epic -> epic.getId() == Integer.parseInt(pathParts[2]))) {
                         jsonResponse = gson.toJson(manager.getEpicByID(Integer.parseInt(pathParts[2])));
@@ -41,7 +39,6 @@ public class EpicHandler extends BaseHttpHandler {
                         sendNotFound(exchange, jsonResponse);
                     }
                 }
-
                 if (pathParts.length == 4) {
                     if (manager.getEpicList().stream().anyMatch(epic -> epic.getId() == Integer.parseInt(pathParts[2]))) {
                         List<Subtask> listOfSubtasks = manager.getEpicByID(Integer.parseInt(pathParts[2]))
@@ -53,9 +50,9 @@ public class EpicHandler extends BaseHttpHandler {
                         sendNotFound(exchange, jsonResponse);
                     }
                 }
-                break; // нужен ли брейк?
+            }
 
-            case "POST":
+            case "POST" -> {
                 StringBuilder objectFromBody = new StringBuilder();
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(exchange.getRequestBody(), "utf-8"))) {
                     String line;
@@ -63,32 +60,29 @@ public class EpicHandler extends BaseHttpHandler {
                         objectFromBody.append(line);
                     }
                 }
-
                 Epic epicAdOrUp = gson.fromJson(objectFromBody.toString(), Epic.class);
-
-                if (pathParts.length == 2){
+                if (pathParts.length == 2) {
                     manager.addNewEpic(epicAdOrUp);
-                    sendApproval(exchange,"The task has been added successfully");
+                    sendApproval(exchange, "The task has been added successfully");
                 }
-
-                if (pathParts.length == 3){
+                if (pathParts.length == 3) {
                     if (manager.getEpicList().stream().anyMatch(task -> task.getId() == epicAdOrUp.getId())) {
                         manager.updateEpic(epicAdOrUp);
                         sendApproval(exchange, "The task has been updated successfully");
-                    }
-                    else {
+                    } else {
                         sendNotFound(exchange, jsonResponse);
                     }
                 }
-                break;
+            }
 
-            case "DELETE":
+            case "DELETE" -> {
                 if (manager.getEpicList().stream().anyMatch(epic -> epic.getId() == Integer.parseInt(pathParts[2]))) {
                     manager.removeEpicByID(Integer.valueOf(pathParts[2]));
                     sendApproval(exchange, "The task has been successfully removed");
                 } else {
                     sendNotFound(exchange, jsonResponse);
                 }
+            }
         }
     }
 }

@@ -1,7 +1,6 @@
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -22,16 +21,14 @@ public class PrioritizedHandler extends BaseHttpHandler{
 
         String jsonResponse = "The set is empty";
 
-        switch (method){
-
-            case "GET":
-                if (manager instanceof InMemoryTaskManager){
-                    List<Task> listOfTasks = ((InMemoryTaskManager) manager).getPrioritizedTasks();
-                    jsonResponse = gson.toJson(listOfTasks);
-                    sendText(exchange, jsonResponse);
-                } else {
-                    sendNotFound(exchange, jsonResponse);
-                }
+        if (method.equals("GET")) {
+            if (manager instanceof InMemoryTaskManager) {
+                List<Task> listOfTasks = ((InMemoryTaskManager) manager).getPrioritizedTasks();
+                jsonResponse = gson.toJson(listOfTasks);
+                sendText(exchange, jsonResponse);
+            } else {
+                sendNotFound(exchange, jsonResponse);
+            }
         }
     }
 }
