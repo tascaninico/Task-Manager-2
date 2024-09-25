@@ -1,5 +1,4 @@
 import java.util.HashMap;
-import java.util.List;
 import java.util.ArrayList;
 
 public class InMemoryHistoryManager implements HistoryManager {
@@ -13,7 +12,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     private int size = 0;
 
     @Override
-    public List<Task> getHistory(){
+    public ArrayList<Task> getHistory(){
         return this.getTasks();
     }
 

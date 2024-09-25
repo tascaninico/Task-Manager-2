@@ -1,8 +1,10 @@
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager{
+
     private final HashMap<Integer, Task> hashOfTasks = new HashMap<>();
 
     private final HashMap<Integer, Epic> hashOfEpics = new HashMap<>();
@@ -81,7 +83,8 @@ public class InMemoryTaskManager implements TaskManager{
             System.out.println("Query to get Epic that does not exist!");
             return;
         }
-        if (subtask.getStartTime().isPresent()){
+
+        if (subtask.getStartTime().isPresent()){  // оптимизировать, так как появился отдельный метод
             if (hostEpic.getSubtasksID().size() == 1){
                 hostEpic.setStartTime(subtask.getStartTime().get());
                 hostEpic.setEndTime(subtask.getStartTime().get().plus(subtask.getDuration()));
@@ -123,8 +126,7 @@ public class InMemoryTaskManager implements TaskManager{
     }
 
     @Override
-    public Task getTaskByID(int id)
-    {
+    public Task getTaskByID(int id) {
         this.historyManager.addTask(hashOfTasks.get(id));
         return hashOfTasks.get(id);
     }
@@ -180,6 +182,7 @@ public class InMemoryTaskManager implements TaskManager{
             hashOfEpics.get(idOfEpic).getSubtasksID().remove(id);
             hashOfSubtasks.remove(id,hashOfSubtasks.get(id));
             defineStatusOfEpic(hashOfEpics.get(idOfEpic));
+            defineEpicTimeAndDuration(hashOfEpics.get(idOfEpic));
             System.out.println("Subtask has been removed successfully");
         } else {
             System.out.println("There is no subtask with such id");
@@ -218,6 +221,39 @@ public class InMemoryTaskManager implements TaskManager{
 
     private int generateID(){
         return ++idNum;
+    }
+
+    private void defineEpicTimeAndDuration(Epic epic){
+        if (!epic.getSubtasksID().isEmpty() && epic.getSubtasksID().size() != 1) {
+            List<LocalDateTime> startDateTimeList = epic.getSubtasksID().stream()
+                    .map(idNum -> this.getSubtaskByID(idNum).getStartTime())
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .collect(Collectors.toList());
+
+            epic.setStartTime(startDateTimeList.stream().min(Comparator.naturalOrder()).get());
+
+            List<LocalDateTime> endDateTimeList = epic.getSubtasksID().stream()
+                    .map(idNum -> this.getSubtaskByID(idNum).getEndTime())
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .collect(Collectors.toList());
+
+            epic.setEndTime(endDateTimeList.stream().max(Comparator.naturalOrder()).get());
+            epic.setDuration(Duration.between(epic.getStartTime().get(), epic.getEndTime().get()));
+
+        } else if (epic.getSubtasksID().size() == 1){
+            Subtask onlySubOfEpic = this.getSubtaskByID(epic.getSubtasksID().get(0));
+            if (onlySubOfEpic.getStartTime().isPresent()) {
+                epic.setStartTime(onlySubOfEpic.getStartTime().get());
+                epic.setDuration(onlySubOfEpic.getDuration());
+                epic.setEndTime(onlySubOfEpic.getEndTime().get());
+            }
+        } else {
+            epic.setStartTime(null);
+            epic.setEndTime(null);
+            epic.setDuration(null);
+        }
     }
 
     private void defineStatusOfEpic(Epic epic){

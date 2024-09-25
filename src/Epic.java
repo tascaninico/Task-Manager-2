@@ -33,6 +33,7 @@ public class Epic extends Task{
     public String toString(){
         String stTime = getStartTime().map(localDateTime -> localDateTime.format(DateTimeDurationFormatter.dateTimeFormatter)).orElse("--:--");
         String enTime = endTime.map(localDateTime -> localDateTime.format(DateTimeDurationFormatter.dateTimeFormatter)).orElse("--:--");
+        String dur = getDuration() != null ? DateTimeDurationFormatter.DurationFormatter(getDuration()) : "--:--";
 
         return "Epic{" +
                 "name = " + "'" + super.getName() + "'"
@@ -40,6 +41,6 @@ public class Epic extends Task{
                 + ", id = " + "'" + super.getId() +"'"
                 + ", status = " + "'" + super.getStatus() + "'"
                 + ", startTime = " + "'" + stTime + "'" +  ", duration = " + "'"
-                + getDuration() + "'" +", endTime = " + "'" + enTime + "'}";
+                + dur + "'" +", endTime = " + "'" + enTime + "'}";
     }
 }
